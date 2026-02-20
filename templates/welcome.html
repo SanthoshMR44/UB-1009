@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Welcome - OralScan AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center">
+        <div class="mb-4">
+            <i class="fas fa-check-circle text-success" style="font-size:5rem;"></i>
+        </div>
+        <h1 class="fw-bold">Welcome to <span class="text-primary">OralScan AI</span></h1>
+        <p class="lead text-muted mb-4">You have successfully logged in. What would you like to do?</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a href="/index" class="btn btn-primary btn-lg px-4">
+                <i class="fas fa-search-plus me-2"></i>Start Screening
+            </a>
+            {% if session.get('role') == 'doctor' %}
+            <a href="/doctor_dashboard" class="btn btn-outline-primary btn-lg px-4">
+                <i class="fas fa-user-md me-2"></i>Doctor Dashboard
+            </a>
+            {% else %}
+            <a href="/patient_dashboard" class="btn btn-outline-primary btn-lg px-4">
+                <i class="fas fa-tachometer-alt me-2"></i>My Dashboard
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}Results - OralScan AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold"><i class="fas fa-chart-bar text-primary me-2"></i>Screening Results</h2>
+            </div>
+
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+                <div class="card-header py-3 {% if 'Risk (Cancer)' in prediction %}bg-danger{% else %}bg-success{% endif %} text-white text-center">
+                    <h4 class="mb-0">
+                        {% if 'Risk (Cancer)' in prediction %}
+                            <i class="fas fa-exclamation-triangle me-2"></i>High Risk Detected
+                        {% else %}
+                            <i class="fas fa-check-circle me-2"></i>Low Risk Detected
+                        {% endif %}
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-5 text-center mb-3 mb-md-0">
+                            <img src="/{{ image_path }}" class="img-fluid rounded-4 shadow-sm" style="max-height:250px;" alt="Uploaded Image">
+                        </div>
+                        <div class="col-md-7">
+                            <div class="mb-3">
+                                <label class="fw-semibold text-muted small">PREDICTION</label>
+                                <div>
+                                    {% if 'Risk (Cancer)' in prediction %}
+                                        <span class="badge bg-danger fs-6 px-3 py-2"><i class="fas fa-exclamation-circle me-1"></i>{{ prediction }}</span>
+                                    {% else %}
+                                        <span class="badge bg-success fs-6 px-3 py-2"><i class="fas fa-shield-alt me-1"></i>{{ prediction }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="fw-semibold text-muted small">CONFIDENCE</label>
+                                <h3 class="fw-bold {% if 'Risk (Cancer)' in prediction %}text-danger{% else %}text-success{% endif %}">{{ confidence }}%</h3>
+                                <div class="progress rounded-pill" style="height:12px;">
+                                    <div class="progress-bar progress-bar-animated progress-bar-striped {% if 'Risk (Cancer)' in prediction %}bg-danger{% else %}bg-success{% endif %}"
+                                         role="progressbar" style="width:0%;" data-target="{{ confidence }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="fw-semibold text-muted small">TIMESTAMP</label>
+                                <p class="mb-0"><i class="fas fa-clock me-1"></i>{{ timestamp }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if symptoms %}
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-header bg-light rounded-top-4">
+                    <h5 class="mb-0"><i class="fas fa-notes-medical text-primary me-2"></i>Symptom Summary</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-2">
+                        <div class="col-6"><span class="text-muted small">Pain Level:</span> <strong>{{ symptoms.pain_level or 'N/A' }}</strong></div>
+                        <div class="col-6"><span class="text-muted small">Bleeding:</span> <strong>{{ symptoms.bleeding or 'N/A' }}</strong></div>
+                        <div class="col-6"><span class="text-muted small">Swelling:</span> <strong>{{ symptoms.swelling or 'N/A' }}</strong></div>
+                        <div class="col-6"><span class="text-muted small">Duration:</span> <strong>{{ symptoms.duration or 'N/A' }}</strong></div>
+                        <div class="col-12"><span class="text-muted small">History:</span> <strong>{{ symptoms.history or 'N/A' }}</strong></div>
+                        {% if symptoms.habits %}
+                        <div class="col-12"><span class="text-muted small">Habits:</span> <strong>{{ symptoms.habits | join(', ') }}</strong></div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-header bg-light rounded-top-4">
+                    <h5 class="mb-0"><i class="fas fa-file-pdf text-danger me-2"></i>Download Report</h5>
+                </div>
+                <div class="card-body p-4">
+                    <p class="text-muted mb-3">Fill in patient details to generate a PDF report.</p>
+                    <form action="/download_pdf" method="POST">
+                        <input type="hidden" name="prediction" value="{{ prediction }}">
+                        <input type="hidden" name="confidence" value="{{ confidence }}">
+                        <input type="hidden" name="image_path" value="{{ image_path }}">
+                        <input type="hidden" name="timestamp" value="{{ timestamp }}">
+                        {% if symptoms %}
+                        <input type="hidden" name="pain_level" value="{{ symptoms.pain_level }}">
+                        <input type="hidden" name="bleeding" value="{{ symptoms.bleeding }}">
+                        <input type="hidden" name="swelling" value="{{ symptoms.swelling }}">
+                        <input type="hidden" name="duration" value="{{ symptoms.duration }}">
+                        <input type="hidden" name="history" value="{{ symptoms.history }}">
+                        {% endif %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <input type="text" name="name" class="form-control" placeholder="Patient Name">
+                            </div>
+                            <div class="col-md-6">
+                                <input type="date" name="dob" class="form-control" placeholder="Date of Birth">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="number" name="age" class="form-control" placeholder="Age">
+                            </div>
+                            <div class="col-md-4">
+                                <select name="sex" class="form-select">
+                                    <option value="">Sex</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="address" class="form-control" placeholder="Address">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-danger mt-3">
+                            <i class="fas fa-download me-2"></i>Download PDF Report
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a href="/index" class="btn btn-outline-primary me-2"><i class="fas fa-redo me-1"></i>New Screening</a>
+                {% if session.get('username') %}
+                <a href="/patient_dashboard" class="btn btn-primary"><i class="fas fa-tachometer-alt me-1"></i>My Dashboard</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const bar = document.querySelector('.progress-bar[data-target]');
+    if (bar) {
+        setTimeout(() => { bar.style.width = bar.dataset.target + '%'; }, 300);
+    }
+});
+</script>
+{% endblock %}

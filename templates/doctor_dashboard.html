@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}Doctor Dashboard - OralScan AI{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3 mb-4">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-user-md text-primary" style="font-size:4rem;"></i>
+                    <h5 class="fw-bold mt-3">{{ session.get('doctor_name', 'Doctor') }}</h5>
+                    <span class="badge bg-info-subtle text-info">{{ session.get('doctor_specialization', 'Specialist') }}</span>
+                    <hr>
+                    <ul class="list-unstyled text-start small">
+                        <li class="mb-2"><a href="/doctor_dashboard" class="text-decoration-none"><i class="fas fa-tachometer-alt me-2 text-primary"></i>Dashboard</a></li>
+                        <li class="mb-2"><a href="/index" class="text-decoration-none"><i class="fas fa-plus-circle me-2 text-primary"></i>New Screening</a></li>
+                    </ul>
+                    <hr>
+                    <form action="/edit_doctor_profile" method="POST">
+                        <div class="input-group input-group-sm">
+                            <input type="text" name="doctor_name" class="form-control" placeholder="Update name">
+                            <button type="submit" class="btn btn-outline-primary btn-sm"><i class="fas fa-save"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold mb-0"><i class="fas fa-clipboard-list text-primary me-2"></i>Patient Records</h3>
+                <span class="badge bg-primary fs-6">{{ records | length }} records</span>
+            </div>
+
+            {% if records and records | length > 0 %}
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Image</th>
+                                <th>Patient</th>
+                                <th>Prediction</th>
+                                <th>Confidence</th>
+                                <th>Status</th>
+                                <th>Follow-up</th>
+                                <th>Audio</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in records %}
+                            <tr>
+                                <td>
+                                    <img src="/{{ record.image_path }}" class="rounded-3" style="width:60px;height:60px;object-fit:cover;" alt="Patient scan">
+                                </td>
+                                <td>
+                                    <span class="fw-semibold">{{ record.get('username', 'Unknown') }}</span>
+                                    <br><small class="text-muted">{{ record.timestamp }}</small>
+                                </td>
+                                <td>
+                                    {% if 'Risk' in record.prediction and 'Low' not in record.prediction %}
+                                        <span class="badge bg-danger">{{ record.prediction }}</span>
+                                    {% else %}
+                                        <span class="badge bg-success">{{ record.prediction }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ record.confidence }}%</td>
+                                <td>
+                                    {% if record.status == 'Pending' %}
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    {% elif record.status == 'Replied' %}
+                                        <span class="badge bg-info">Replied</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ record.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if record.get('follow_up') %}
+                                        <span class="badge bg-warning text-dark"><i class="fas fa-flag"></i> Yes</span>
+                                        <form action="/unflag_follow_up" method="POST" class="d-inline">
+                                            <input type="hidden" name="timestamp" value="{{ record.timestamp }}">
+                                            <button type="submit" class="btn btn-link btn-sm text-muted p-0 ms-1" title="Unflag"><i class="fas fa-times-circle"></i></button>
+                                        </form>
+                                    {% else %}
+                                        <form action="/flag_follow_up" method="POST" class="d-inline">
+                                            <input type="hidden" name="timestamp" value="{{ record.timestamp }}">
+                                            <button type="submit" class="btn btn-outline-warning btn-sm" title="Flag for follow-up"><i class="fas fa-flag"></i></button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if record.get('audio_path') %}
+                                        <audio controls class="audio-sm"><source src="/{{ record.audio_path }}" type="audio/mpeg"></audio>
+                                    {% else %}
+                                        <span class="text-muted small">None</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        <a href="/chat_doctor?timestamp={{ record.timestamp }}" class="btn btn-outline-primary btn-sm" title="Chat"><i class="fas fa-comments"></i></a>
+                                        <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ loop.index }}" title="Delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+
+                                    <div class="modal fade" id="deleteModal{{ loop.index }}" tabindex="-1">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content rounded-4">
+                                                <div class="modal-header border-0">
+                                                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle text-danger me-2"></i>Confirm Delete</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Are you sure you want to delete this patient record? This action cannot be undone.
+                                                </div>
+                                                <div class="modal-footer border-0">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <form action="/delete_record" method="POST" class="d-inline">
+                                                        <input type="hidden" name="timestamp" value="{{ record.timestamp }}">
+                                                        <button type="submit" class="btn btn-danger"><i class="fas fa-trash me-1"></i>Delete</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-inbox text-muted" style="font-size:4rem;"></i>
+                <h5 class="text-muted mt-3">No patient records yet</h5>
+                <p class="text-muted">Patient records will appear here after screenings are submitted.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

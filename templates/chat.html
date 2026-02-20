@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Chat with Doctor - OralScan AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white py-3">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-user-md fs-4 me-3"></i>
+                        <div>
+                            <h5 class="mb-0">Chat with {{ record.get('doctor', 'Doctor') }}</h5>
+                            <small class="opacity-75">Record: {{ record.timestamp }}</small>
+                        </div>
+                        <a href="/patient_dashboard" class="btn btn-outline-light btn-sm ms-auto"><i class="fas fa-arrow-left me-1"></i>Back</a>
+                    </div>
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="chat-container" id="chatContainer">
+                        {% set all_messages = [] %}
+
+                        {% if record.doctor_replies %}
+                            {% for reply in record.doctor_replies %}
+                                {% if all_messages.append({'type': 'doctor', 'message': reply.message, 'time': reply.time}) %}{% endif %}
+                            {% endfor %}
+                        {% endif %}
+
+                        {% if record.patient_replies %}
+                            {% for reply in record.patient_replies %}
+                                {% if all_messages.append({'type': 'patient', 'message': reply.message, 'time': reply.time}) %}{% endif %}
+                            {% endfor %}
+                        {% endif %}
+
+                        {% if all_messages | length == 0 %}
+                        <div class="text-center py-5 text-muted">
+                            <i class="fas fa-comments fs-1 mb-3 d-block"></i>
+                            <p>No messages yet. Start the conversation!</p>
+                        </div>
+                        {% endif %}
+
+                        {% for msg in all_messages | sort(attribute='time') %}
+                        <div class="chat-message {{ 'sent' if msg.type == 'patient' else 'received' }}">
+                            <div class="message-bubble {{ 'bg-patient' if msg.type == 'patient' else 'bg-doctor' }}">
+                                <div class="message-sender">
+                                    {% if msg.type == 'doctor' %}
+                                        <i class="fas fa-user-md me-1"></i>Doctor
+                                    {% else %}
+                                        <i class="fas fa-user me-1"></i>You
+                                    {% endif %}
+                                </div>
+                                <p class="mb-1">{{ msg.message }}</p>
+                                <small class="message-time">{{ msg.time }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light p-3">
+                    <form action="/chat_reply" method="POST">
+                        <input type="hidden" name="timestamp" value="{{ record.timestamp }}">
+                        <div class="input-group">
+                            <input type="text" name="message" class="form-control rounded-pill me-2" placeholder="Type a message..." required autofocus>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const c = document.getElementById('chatContainer');
+    if (c) c.scrollTop = c.scrollHeight;
+});
+</script>
+{% endblock %}

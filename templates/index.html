@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}Screening - OralScan AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold"><i class="fas fa-stethoscope text-primary me-2"></i>Oral Cancer Screening</h2>
+                <p class="text-muted">Upload an image and fill in your symptoms for AI analysis</p>
+            </div>
+
+            <form id="screeningForm" action="/predict" method="POST" enctype="multipart/form-data">
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-primary text-white rounded-top-4">
+                        <h5 class="mb-0"><i class="fas fa-camera me-2"></i>Image Upload</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div id="dropZone" class="drop-zone text-center p-5 border border-2 border-dashed rounded-4">
+                            <i class="fas fa-cloud-upload-alt fs-1 text-primary mb-3 d-block"></i>
+                            <h5 class="text-muted">Drag & Drop your image here</h5>
+                            <p class="text-muted small mb-3">or click to browse files</p>
+                            <input type="file" name="image" id="imageInput" accept="image/*" class="d-none" required>
+                            <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('imageInput').click()">
+                                <i class="fas fa-folder-open me-2"></i>Browse Files
+                            </button>
+                        </div>
+                        <div id="imagePreviewContainer" class="mt-3 text-center d-none">
+                            <img id="imagePreview" class="img-fluid rounded-4 shadow-sm" style="max-height:300px;" alt="Preview">
+                            <p class="text-success mt-2 small"><i class="fas fa-check-circle me-1"></i>Image selected</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-primary text-white rounded-top-4">
+                        <h5 class="mb-0"><i class="fas fa-notes-medical me-2"></i>Symptom Details</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Pain Level</label>
+                                <select name="pain_level" class="form-select">
+                                    <option value="">Select</option>
+                                    <option value="None">None</option>
+                                    <option value="Mild">Mild</option>
+                                    <option value="Moderate">Moderate</option>
+                                    <option value="Severe">Severe</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Bleeding</label>
+                                <select name="bleeding" class="form-select">
+                                    <option value="">Select</option>
+                                    <option value="None">None</option>
+                                    <option value="Occasional">Occasional</option>
+                                    <option value="Frequent">Frequent</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Swelling</label>
+                                <select name="swelling" class="form-select">
+                                    <option value="">Select</option>
+                                    <option value="None">None</option>
+                                    <option value="Mild">Mild</option>
+                                    <option value="Moderate">Moderate</option>
+                                    <option value="Severe">Severe</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Duration of Symptoms</label>
+                                <select name="duration" class="form-select">
+                                    <option value="">Select</option>
+                                    <option value="Less than 1 week">Less than 1 week</option>
+                                    <option value="1-2 weeks">1-2 weeks</option>
+                                    <option value="2-4 weeks">2-4 weeks</option>
+                                    <option value="More than 1 month">More than 1 month</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Medical History</label>
+                                <textarea name="history" class="form-control" rows="2" placeholder="Any relevant medical history..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-primary text-white rounded-top-4">
+                        <h5 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>Habits & Additional Info</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <label class="form-label fw-semibold mb-3">Habits (select all that apply)</label>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input habit-check" type="checkbox" name="habits" value="Tobacco" id="habitTobacco" data-target="tobaccoYears">
+                                    <label class="form-check-label" for="habitTobacco">Tobacco</label>
+                                </div>
+                                <div id="tobaccoYears" class="mt-2 d-none">
+                                    <input type="number" name="tobacco_years" class="form-control form-control-sm" placeholder="Years of use">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input habit-check" type="checkbox" name="habits" value="Alcohol" id="habitAlcohol" data-target="alcoholYears">
+                                    <label class="form-check-label" for="habitAlcohol">Alcohol</label>
+                                </div>
+                                <div id="alcoholYears" class="mt-2 d-none">
+                                    <input type="number" name="alcohol_years" class="form-control form-control-sm" placeholder="Years of use">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input habit-check" type="checkbox" name="habits" value="Smoking" id="habitSmoking" data-target="smokingYears">
+                                    <label class="form-check-label" for="habitSmoking">Smoking</label>
+                                </div>
+                                <div id="smokingYears" class="mt-2 d-none">
+                                    <input type="number" name="smoking_years" class="form-control form-control-sm" placeholder="Years of use">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">3 Finger Trismus Test</label>
+                                <select name="trismus_test" class="form-select">
+                                    <option value="">Select</option>
+                                    <option value="Can open fully (3 fingers)">Can open fully (3 fingers)</option>
+                                    <option value="Limited opening (2 fingers)">Limited opening (2 fingers)</option>
+                                    <option value="Very limited (1 finger)">Very limited (1 finger)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Pain While Opening Mouth</label>
+                                <select name="mouth_pain" class="form-select">
+                                    <option value="">Select</option>
+                                    <option value="No">No</option>
+                                    <option value="Mild">Mild</option>
+                                    <option value="Moderate">Moderate</option>
+                                    <option value="Severe">Severe</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Extra Details</label>
+                                <textarea name="extra_details" class="form-control" rows="2" placeholder="Any additional information..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-lg px-5" id="submitBtn">
+                        <span id="submitText"><i class="fas fa-microscope me-2"></i>Analyze Image</span>
+                        <span id="submitSpinner" class="d-none">
+                            <span class="spinner-border spinner-border-sm me-2"></span>Analyzing...
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}OralScan AI - AI-Powered Oral Cancer Detection{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6">
+                <span class="badge bg-primary-subtle text-primary mb-3 px-3 py-2 rounded-pill">
+                    <i class="fas fa-microscope me-1"></i> AI-Powered Screening
+                </span>
+                <h1 class="display-4 fw-bold text-dark mb-3">
+                    Early Detection of <span class="text-primary">Oral Cancer</span> Powered by AI
+                </h1>
+                <p class="lead text-muted mb-4">
+                    Upload an image of your oral cavity and get instant AI-powered risk assessment. Our advanced deep learning model helps identify potential signs of oral cancer early.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="/index" class="btn btn-primary btn-lg px-4">
+                        <i class="fas fa-search-plus me-2"></i>Start Screening
+                    </a>
+                    <a href="/login" class="btn btn-outline-primary btn-lg px-4">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center mt-5 mt-lg-0">
+                <div class="hero-illustration">
+                    <i class="fas fa-heartbeat hero-icon text-primary"></i>
+                    <div class="hero-circle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-light" id="about">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">About <span class="text-primary">OralScan AI</span></h2>
+            <p class="text-muted mx-auto" style="max-width:600px;">A comprehensive AI-based oral cancer detection platform designed for patients and healthcare professionals.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 text-center p-4">
+                    <div class="card-icon bg-primary-subtle rounded-circle mx-auto mb-3">
+                        <i class="fas fa-brain text-primary fs-3"></i>
+                    </div>
+                    <h5 class="fw-bold">AI Analysis</h5>
+                    <p class="text-muted small">Deep learning model trained on thousands of oral images to identify potential cancer indicators.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 text-center p-4">
+                    <div class="card-icon bg-success-subtle rounded-circle mx-auto mb-3">
+                        <i class="fas fa-file-medical text-success fs-3"></i>
+                    </div>
+                    <h5 class="fw-bold">Detailed Reports</h5>
+                    <p class="text-muted small">Get downloadable PDF reports with prediction results, clinical observations, and symptom analysis.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 text-center p-4">
+                    <div class="card-icon bg-info-subtle rounded-circle mx-auto mb-3">
+                        <i class="fas fa-comments text-info fs-3"></i>
+                    </div>
+                    <h5 class="fw-bold">Doctor Consultation</h5>
+                    <p class="text-muted small">Built-in chat system connecting patients with doctors for follow-up consultations.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5" id="features">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">How It <span class="text-primary">Works</span></h2>
+        </div>
+        <div class="row g-4 align-items-center">
+            <div class="col-md-3 text-center">
+                <div class="step-circle mx-auto mb-3">1</div>
+                <h6 class="fw-bold">Upload Image</h6>
+                <p class="text-muted small">Take or upload a photo of the oral area of concern.</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="step-circle mx-auto mb-3">2</div>
+                <h6 class="fw-bold">Add Symptoms</h6>
+                <p class="text-muted small">Fill in symptom details and relevant medical history.</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="step-circle mx-auto mb-3">3</div>
+                <h6 class="fw-bold">AI Analysis</h6>
+                <p class="text-muted small">Our AI model analyzes the image and provides risk assessment.</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="step-circle mx-auto mb-3">4</div>
+                <h6 class="fw-bold">Get Report</h6>
+                <p class="text-muted small">Download a detailed PDF report and consult with doctors.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-3">Ready to Get Screened?</h2>
+        <p class="mb-4 opacity-75">Early detection can save lives. Start your free screening today.</p>
+        <a href="/index" class="btn btn-light btn-lg px-5">
+            <i class="fas fa-arrow-right me-2"></i>Start Now
+        </a>
+    </div>
+</section>
+{% endblock %}

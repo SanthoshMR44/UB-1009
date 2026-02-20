@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Login - OralScan AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <i class="fas fa-user-circle fs-1 mb-2"></i>
+                    <h4 class="mb-0">Welcome Back</h4>
+                    <p class="mb-0 opacity-75 small">Login or create a new account</p>
+                </div>
+                <div class="card-body p-4">
+                    {% if error %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endif %}
+
+                    <form method="POST" action="/login">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i class="fas fa-user me-1"></i> Username</label>
+                            <input type="text" name="username" class="form-control form-control-lg" placeholder="Enter username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i class="fas fa-lock me-1"></i> Password</label>
+                            <input type="password" name="password" class="form-control form-control-lg" placeholder="Enter password" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold"><i class="fas fa-user-tag me-1"></i> Role</label>
+                            <select name="role" class="form-select form-select-lg">
+                                <option value="patient">Patient</option>
+                                <option value="doctor">Doctor</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login / Register
+                        </button>
+                    </form>
+                </div>
+                <div class="card-footer bg-light text-center py-3">
+                    <small class="text-muted">New users are automatically registered on first login.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
